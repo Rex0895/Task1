@@ -26,4 +26,14 @@ public class Employer {
     public void getSalary(BigDecimal sal) {
         salary = sal;
     }
+
+    @Override
+    public String toString() {
+        return surname;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return toString().equals(obj.toString());
+    }
 }

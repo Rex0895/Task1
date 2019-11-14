@@ -2,11 +2,13 @@ package com.tsc;
 
 import java.io.*;
 import java.math.BigDecimal;
-import java.util.IllegalFormatException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Reader {
     private String path;
+    private static int lineCounter;
 
     public String getPath() {
         return path;
@@ -20,60 +22,67 @@ public class Reader {
         path = p;
     }
 
-    public boolean preCheck(String line){
-        /*Проверка на правильность входной строки*/
-        //Все лишние символы и пробелы, кроме точки и запятой (для вещ. чисел)
-        String[] tmp = line.split("(?U)[^\\w|.]+");
-        //Проверка количество входных параметров
-        int len = tmp.length;
-        //Иванов IT 45000
-        if (len > 3 || len < 0)
-            return false;
-        String surN = tmp[0];
-        String depN = tmp[1];
-        String sal = tmp[2];
-        /*Проверка правильности входных параметров*/
-        //Проверка фамилии и отдела
-        String con = "([А-Я])([а-я]+)|([A-Z])([A-Za-z]+)";
-        if (!surN.matches(con) || !depN.matches(con)) return false;
-            //System.out.println("Неправильный формат фамилии или названия отдела");
-
-        //Проверка значений зарплаты
-        BigDecimal bd = new BigDecimal(sal);
-        //Отрицательные / 0 / больше 1кк
-        if (bd.compareTo(BigDecimal.ZERO) == -1 || bd.equals(BigDecimal.ZERO)
-                || bd.compareTo(BigDecimal.valueOf(1000000)) == 1) return false;
-            //System.out.println("Неправильный формат ЗП");
-        return true;
-    }
-    public void readDepartments(List<Department> deps) {
+    public HashMap<String,Department> readDepartments() {
+        lineCounter = 0;
+        HashMap<String,Department> departments = new HashMap<>();
         try (BufferedReader bufRead = new BufferedReader(new FileReader(new File(path)))) {
             String line;
             //Выделяем названия департаментов из файла
             while ((line = bufRead.readLine()) != null) {
-                if(preCheck(line)) {
-                    String[] tmp = line.split(" ");//делим на подстроки
-                    //Создаем сотрудника
-                    String surname = tmp[0];//фамилия
-                    String departName = tmp[1];//отдел
-                    BigDecimal salary = new BigDecimal(tmp[2]);//зп
-                    Employer emp = new Employer(surname, salary);
-                    Department tmpDep = new Department(departName);
-                    if (deps.isEmpty() || !deps.contains(tmpDep))//сравнение по имени
-                    {
-                        deps.add(tmpDep);
-                    }
-                    for (Department dep : deps) {
-                        if (dep.getName().equals(departName))
-                            dep.getListEmp().add(emp);
-                    }
+                String[] tmp = line.split("(?U)[^\\w|.]+");//делим на подстроки, без лишних символов
+                int len = tmp.length;
+                /**Проверка правильности входных параметров*/
+                //Проверка количество входных параметров: Иванов IT 45000
+                if (len > 3 || len < 0) {
+                    System.out.println("Ошибка: Неверное число входных параметров: " + len + " (Строка " + lineCounter + ")");
+                    continue;
                 }
+                //Проверка параметров на null
+                if (tmp[0] == null||tmp[1] == null||tmp[2] == null) {
+                    System.out.println("Ошибка: Значение одного из параметров null" + " (Строка " + lineCounter + ")");
+                    continue;
+                }
+                //Проверка параметров фамилии и отдела
+                String con = "([А-Я])([а-я]+)|([A-Z])([A-Za-z]+)";
+                if (!tmp[0].matches(con) || !tmp[1].matches(con)) {
+                    System.out.println("Ошибка: Параметры фамилии или департамента в неправильном формате. (Строка " + lineCounter + ")");
+                    continue;
+                }
+                //Создаем сотрудника
+                String surname = tmp[0];//фамилия
+                String departName = tmp[1];//отдел
+                BigDecimal salary = new BigDecimal(tmp[2]);//зп
+                //Проверка грпничных значений ЗП
+                if (salary.compareTo(BigDecimal.ZERO) == -1 || salary.compareTo(BigDecimal.ZERO) == 0
+                        || salary.compareTo(BigDecimal.valueOf(1000000)) == 1) {
+                    System.out.println("Ошибка: Параметр ЗП не попадает в заданный диапазон. (Строка " + lineCounter + ")");
+                    continue;
+                }
+                Employer employer = new Employer(surname, salary);
+                //Добавление в список без дублирования отделов
+                if (!departments.containsKey(departName)) {
+                    Department tmpDep = new Department(departName);
+                    List<Employer> employerList = new ArrayList<>();
+                    employerList.add(employer);
+                    tmpDep.setEmployersList(employerList);
+                    departments.put(departName,tmpDep);
+                }
+                else{
+                    departments.get(departName).getEmployersList().add(employer);
+                }
+                lineCounter++;
             }
-            bufRead.close();
-        } catch (FileNotFoundException ex) {
+        } catch (FileNotFoundException e) {
             System.out.println("File not found");
-        } catch (IOException ix) {
-            System.out.println(ix.toString());
+        } catch (IOException e) {
+            System.out.println(e.toString());
+        } catch (NumberFormatException e) {
+            System.out.println("Неверный формат для параметра ЗП (Строка "+lineCounter+")");
         }
+        catch(NullPointerException e){
+            System.out.println("Объект не создан");
+            e.printStackTrace();
+        }
+        return departments;
     }
 }
