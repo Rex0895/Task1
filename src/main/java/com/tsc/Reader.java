@@ -29,6 +29,7 @@ public class Reader {
             String line;
             //Выделяем названия департаментов из файла
             while ((line = bufRead.readLine()) != null) {
+                if(line.isEmpty())continue;
                 String[] tmp = line.split("(?U)[^\\w|.]+");//делим на подстроки, без лишних символов
                 int len = tmp.length;
                 /**Проверка правильности входных параметров*/

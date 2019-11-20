@@ -3,6 +3,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Formatter;
 import java.util.List;
 
 interface Copyable {
@@ -67,6 +68,7 @@ public class Department implements Copyable {
         //System.out.println("Перевод "+emp.getSurname()+" из департамента "+name+" в "+destDep.name);
 
     }
+
     //для сравнения департаментов, переопрделеяем методы:
     @Override
     public String toString() {

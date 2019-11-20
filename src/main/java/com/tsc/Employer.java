@@ -1,6 +1,7 @@
 package com.tsc;
 
 import java.math.BigDecimal;
+import java.util.Formatter;
 
 public class Employer {
     private String surname;
@@ -23,7 +24,7 @@ public class Employer {
         surname = sn;
     }
 
-    public void getSalary(BigDecimal sal) {
+    public void setSalary(BigDecimal sal) {
         salary = sal;
     }
 
