@@ -8,7 +8,6 @@ import java.util.List;
 
 public class Reader {
     private String path;
-    private static int lineCounter;
 
     public String getPath() {
         return path;
@@ -22,14 +21,14 @@ public class Reader {
         path = p;
     }
 
-    public HashMap<String,Department> readDepartments() {
-        lineCounter = 0;
-        HashMap<String,Department> departments = new HashMap<>();
+    public HashMap<String, Department> readDepartments() {
+        int lineCounter = 0;
+        HashMap<String, Department> departments = new HashMap<>();
         try (BufferedReader bufRead = new BufferedReader(new FileReader(new File(path)))) {
             String line;
             //Выделяем названия департаментов из файла
             while ((line = bufRead.readLine()) != null) {
-                if(line.isEmpty())continue;
+                if (line.isEmpty()) continue;
                 String[] tmp = line.split("(?U)[^\\w|.]+");//делим на подстроки, без лишних символов
                 int len = tmp.length;
                 /**Проверка правильности входных параметров*/
@@ -39,7 +38,7 @@ public class Reader {
                     continue;
                 }
                 //Проверка параметров на null
-                if (tmp[0] == null||tmp[1] == null||tmp[2] == null) {
+                if (tmp[0] == null || tmp[1] == null || tmp[2] == null) {
                     System.out.println("Ошибка: Значение одного из параметров null" + " (Строка " + lineCounter + ")");
                     continue;
                 }
@@ -66,23 +65,18 @@ public class Reader {
                     List<Employer> employerList = new ArrayList<>();
                     employerList.add(employer);
                     tmpDep.setEmployersList(employerList);
-                    departments.put(departName,tmpDep);
-                }
-                else{
+                    departments.put(departName, tmpDep);
+                } else {
                     departments.get(departName).getEmployersList().add(employer);
                 }
                 lineCounter++;
             }
         } catch (FileNotFoundException e) {
-            System.out.println("File not found");
+            System.out.println(e.getMessage());
         } catch (IOException e) {
-            System.out.println(e.toString());
+            System.out.println(e.getMessage());
         } catch (NumberFormatException e) {
-            System.out.println("Неверный формат для параметра ЗП (Строка "+lineCounter+")");
-        }
-        catch(NullPointerException e){
-            System.out.println("Объект не создан");
-            e.printStackTrace();
+            System.out.println("Неверный формат для параметра ЗП (Строка " + lineCounter + ")");
         }
         return departments;
     }

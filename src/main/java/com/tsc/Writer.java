@@ -1,6 +1,8 @@
 package com.tsc;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Writer {
     private String path;
@@ -23,9 +25,9 @@ public class Writer {
             writer.flush();
             writer.close();
         } catch (FileNotFoundException ex) {
-            System.out.println("File not found");
+            System.out.println(ex.getMessage());
         } catch (IOException ix) {
-            System.out.println(ix.toString());
+            System.out.println(ix.getMessage());
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.tsc;
 
 import java.math.BigDecimal;
-import java.util.Formatter;
 
 public class Employer {
     private String surname;
@@ -35,6 +34,13 @@ public class Employer {
 
     @Override
     public boolean equals(Object obj) {
-        return toString().equals(obj.toString());
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        Employer guest = (Employer) obj;
+        return (surname == guest.getSurname() || (surname != null && surname.equals(guest.getSurname())))
+                && (salary.compareTo(BigDecimal.ZERO) != 0
+                && salary.compareTo(guest.getSalary()) == 0);
     }
 }
