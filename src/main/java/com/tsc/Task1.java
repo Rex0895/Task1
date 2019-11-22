@@ -175,15 +175,13 @@ public class Task1 {
             printAllEmployers(departments);
             StringBuilder strOut = new StringBuilder();
             strOut.append("Метод прямомого перевода сорудников:\n");
-            strOut.append(objectsTransfers(departments));
+            strOut.append(objectsTransfers(departments) + "\n");
             strOut.append("Арифметический метод перевода сорудников:\n");
-            strOut.append(ariphmeticTransfers(departments));
+            strOut.append(ariphmeticTransfers(departments) + "\n");
             strOut.append("Рекурсионный метод перевода сорудников:\n");
-            strOut.append((departments));
-            strOut.append(makeAllTransfers(departments));
+            strOut.append(makeAllTransfers(departments) + "\n");
             //Записываем в файл
             writer.writeToFile(strOut.toString());
-
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Количество аргументов неверно: " + args.length + " вместо 2");
         } catch (NullPointerException e) {

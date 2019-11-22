@@ -49,7 +49,9 @@ public class Department implements Copyable {
 
 
     public void addEmployer(Employer emp) {
-        if (!employersList.contains(emp) && employersList != null)
+        if (employersList == null)
+            employersList = new ArrayList<>();
+        if (!employersList.contains(emp))
             employersList.add(emp);
     }
 
@@ -58,8 +60,6 @@ public class Department implements Copyable {
             destinationDepartment.addEmployer(emp);
             employersList.remove(emp);
         }
-        //System.out.println("Перевод "+emp.getSurname()+" из департамента "+name+" в "+destDep.name);
-
     }
 
     //для сравнения департаментов, переопрделеяем методы:
